@@ -47,12 +47,15 @@
     (define-key map "\r" 'variable-pitch-table-sort-by-column)
     map))
 
-(defun variable-pitch-table (heading lines &optional data)
+(defun variable-pitch-table (heading lines &optional data separator-width)
   "Display a table using a variable pitch font.
 HEADING is a list of header names and possibly widths; LINES is a
 list of list of strings, and DATA is a list of data to be put on
 the lines as the `data' property.  (The fourth element of DATA is
 put on the fourth line, etc.)
+
+SEPARATOR-WIDTH says how many pixels to separate columns width.
+The default is 10.
 
 Usage example:
 
@@ -68,7 +71,7 @@ Usage example:
       (loop for i from 0
 	    for spec in heading
 	    do (goto-char (point-min))
-	    (vpt--column i spec lines data)))))
+	    (vpt--column i spec lines data (or separator-width 10))))))
 
 (defun vpt--limit-string (string length)
   (if (or (not length)
@@ -76,7 +79,7 @@ Usage example:
       string
     (substring string 0 length)))
 
-(defun vpt--column (i spec lines &optional data)
+(defun vpt--column (i spec lines data separator-width)
   (let ((width (getf spec :width))
 	(name (getf spec :name))
 	(max 0)
@@ -107,7 +110,8 @@ Usage example:
       (goto-char (point-min))
       (while (not (eobp))
 	(end-of-line)
-	(insert (propertize " " 'display `(space :align-to (,(+ max 20)))))
+	(insert (propertize
+		 " " 'display `(space :align-to (,(+ max separator-width)))))
 	(forward-line 1)))
     ;; Insert the data.
     (goto-char (point-min))
@@ -124,7 +128,8 @@ Usage example:
     ;; Fix up the header line.
     (goto-char (point-min))
     (end-of-line)
-    (insert (propertize " " 'display `(space :align-to (,(+ max 20)))))
+    (insert (propertize
+	     " " 'display `(space :align-to (,(+ max separator-width)))))
     (add-text-properties header-item-start (point)
 			 `(face (variable-pitch :background "#808080")
 				keymap ,variable-pitch-table-map))))
