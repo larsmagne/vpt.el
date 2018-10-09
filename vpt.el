@@ -22,10 +22,11 @@
 
 (defvar variable-pitch-table-map
   (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map special-mode-map)
     (define-key map "\r" 'variable-pitch-table-sort-by-column)
     map))
 
-(defun variable-pitch-table (heading data)
+(defun variable-pitch-table (heading lines &optional data)
   "Display a table using a variable pitch font."
   (save-excursion
     (save-restriction
@@ -33,7 +34,7 @@
       (loop for i from 0
 	    for spec in heading
 	    do (goto-char (point-min))
-	    (vpt--column i spec data)))))
+	    (vpt--column i spec lines data)))))
 
 (defun vpt--limit-string (string length)
   (if (or (not length)
@@ -92,12 +93,13 @@
     (insert (propertize " " 'display `(space :align-to (,(+ max 20)))))
     (add-text-properties header-item-start (point)
 			 `(face (variable-pitch :background "#808080")
-				local-map ,variable-pitch-table-map))))
+				keymap ,variable-pitch-table-map))))
 
 (defun variable-pitch-table-sort-by-column (&optional reverse)
   "Sort the table by the column under point."
   (interactive "P")
-  (let ((column (get-text-property (point) 'vpt-index)))
+  (let ((column (get-text-property (point) 'vpt-index))
+	(inhibit-read-only t))
     (save-excursion
       (save-restriction
 	(narrow-to-region
