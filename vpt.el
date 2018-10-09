@@ -16,6 +16,27 @@
 
 ;;; Commentary:
 
+;; This package makes it possible to make tabular buffers that uses a
+;; variable-pitch face.
+
+;; Usage:
+
+;; (variable-pitch-table '((:name "First" :width 10)
+;;                         (:name "Second" :width 5))
+;;                       '(("A thing" "Yes")
+;;                         ("A wide thing that needs chopping" "And more")
+;;                         ("And the last one" "Foo")))
+
+;; but you'd normally pass in strings that are made with something like
+
+;; (propertize "At thing" 'face 'variable-pitch)
+
+;; or
+
+;; (propertize "At thing" 'face '(variable-pitch :background "red"))
+
+;; or whatever face and font you want to use.
+
 ;;; Code:
 
 (require 'cl)
