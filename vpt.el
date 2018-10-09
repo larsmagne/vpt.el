@@ -48,7 +48,20 @@
     map))
 
 (defun variable-pitch-table (heading lines &optional data)
-  "Display a table using a variable pitch font."
+  "Display a table using a variable pitch font.
+HEADING is a list of header names and possibly widths; LINES is a
+list of list of strings, and DATA is a list of data to be put on
+the lines as the `data' property.  (The fourth element of DATA is
+put on the fourth line, etc.)
+
+Usage example:
+
+ (variable-pitch-table '((:name \"First\" :width 10)
+                         (:name \"Second\" :width 5))
+                       '((\"A thing\" \"Yes\")
+                         (\"A wide thing that needs chopping\" \"And more\")
+                         (\"And the last one\" \"Foo\"))
+                        (thing1 thing2 thing3))"
   (save-excursion
     (save-restriction
       (narrow-to-region (point) (point))
