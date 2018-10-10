@@ -102,9 +102,10 @@ Usage example:
   (when length
     (let ((buffer (current-buffer)))
       (with-temp-buffer
-	;; We use an "x" to get the typical character width, but any
-	;; other non-narrow lower case character would be OK.
-	(insert (propertize (make-string length ?x) 'face 'variable-pitch))
+	;; We use an "8" to get the typical character width, because
+	;; this means that we won't chop off numbers if we're doing
+	;; number columns.
+	(insert (propertize (make-string length ?8) 'face 'variable-pitch))
 	(vpt--pixel-column)))))
 
 (defun vpt--column (i spec lines data separator-width)
