@@ -142,7 +142,8 @@ Usage example:
 		 " " 'display `(space :align-to (,(+ max separator-width)))
 		 ;; Extend the background colour from the string to
 		 ;; the space.
-		 'face (get-text-property (1- (point)) 'face)))
+		 'face (get-text-property (max (1- (point)) (point-min))
+					  'face)))
 	(forward-line 1)))
     ;; Insert the data.
     (goto-char (point-min))
