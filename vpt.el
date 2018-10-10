@@ -73,20 +73,48 @@ Usage example:
 	    do (goto-char (point-min))
 	    (vpt--column i spec lines data (or separator-width 10))))))
 
-(defun vpt--limit-string (string length)
-  (if (or (not length)
-	  (< (length string) length))
+(defun vpt--limit-string (string pixels)
+  (if (not pixels)
       string
-    (substring string 0 length)))
+    (with-temp-buffer
+      (insert string)
+      (if (< (vpt--pixel-column) pixels)
+	  string
+	;; Iterate to find appropriate length.
+	(while (and (> (vpt--pixel-column) pixels)
+		    (not (bobp)))
+	  (forward-char -1))
+	;; Return at least one character.
+	(buffer-substring (point-min) (max (point)
+					   (1+ (point-min))))))))
+
+(defun vpt--pixel-column ()
+  (if (not (get-buffer-window (current-buffer)))
+      (save-window-excursion
+        ;; Avoid errors if the selected window is a dedicated one,
+        ;; and they just want to insert a document into it.
+        (set-window-dedicated-p nil nil)
+	(set-window-buffer nil (current-buffer))
+	(car (window-text-pixel-size nil (line-beginning-position) (point))))
+    (car (window-text-pixel-size nil (line-beginning-position) (point)))))
+
+(defun vpt--pixel-width (length)
+  (when length
+    (let ((buffer (current-buffer)))
+      (with-temp-buffer
+	;; We use an "x" to get the typical character width, but any
+	;; other non-narrow lower case character would be OK.
+	(insert (propertize (make-string length ?x) 'face 'variable-pitch))
+	(vpt--pixel-column)))))
 
 (defun vpt--column (i spec lines data separator-width)
-  (let ((width (getf spec :width))
+  (let ((pixel-width (vpt--pixel-width (getf spec :width)))
 	(name (getf spec :name))
 	(max 0)
 	header-item-start)
     (end-of-line)
     (setq header-item-start (point))
-    (insert (vpt--limit-string (propertize name 'vpt-index i) width))
+    (insert (vpt--limit-string (propertize name 'vpt-index i) pixel-width))
     (when (zerop i)
       (insert "\n"))
     ;; Insert the column.
@@ -94,7 +122,7 @@ Usage example:
 	  for elem = (elt line i)
 	  do (forward-line 1)
 	  (end-of-line)
-	  (insert (propertize (vpt--limit-string elem width)
+	  (insert (propertize (vpt--limit-string elem pixel-width)
 			      'vpt-value elem))
 	  (when (zerop i)
 	    (insert "\n")))
@@ -102,8 +130,7 @@ Usage example:
     (goto-char (point-min))
     (while (not (eobp))
       (end-of-line)
-      (setq max (max max (car (window-text-pixel-size
-			       nil (line-beginning-position) (point)))))
+      (setq max (max max (vpt--pixel-column)))
       (forward-line 1))
     ;; Indent to the max width (but not on the final item on the line).
     (unless (= i (1- (length (car lines))))
