@@ -139,7 +139,10 @@ Usage example:
       (while (not (eobp))
 	(end-of-line)
 	(insert (propertize
-		 " " 'display `(space :align-to (,(+ max separator-width)))))
+		 " " 'display `(space :align-to (,(+ max separator-width)))
+		 ;; Extend the background colour from the string to
+		 ;; the space.
+		 'face (get-text-property (1- (point)) 'face)))
 	(forward-line 1)))
     ;; Insert the data.
     (goto-char (point-min))
