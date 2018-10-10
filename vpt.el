@@ -151,8 +151,10 @@ Usage example:
     (goto-char (point-min))
     (forward-line 1)
     (dolist (elem data)
-      (put-text-property (point) (line-end-position) 'data elem)
-      (forward-line 1))
+      (put-text-property (point) (progn
+				   (forward-line 1)
+				   (point))
+			 'data elem))
     ;; Fix up the header line.
     (goto-char (point-min))
     (end-of-line)
