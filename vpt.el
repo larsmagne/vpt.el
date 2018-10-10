@@ -169,7 +169,8 @@ Usage example:
 				keymap ,variable-pitch-table-map))))
 
 (defun variable-pitch-table-sort-by-column (&optional reverse)
-  "Sort the table by the column under point."
+  "Sort the table by the column under point.
+If REVERSE (the prefix), sort in reverse order."
   (interactive "P")
   (let ((column (get-text-property (point) 'vpt-index))
 	(inhibit-read-only t))
