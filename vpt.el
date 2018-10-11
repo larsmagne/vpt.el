@@ -184,16 +184,26 @@ If REVERSE (the prefix), sort in reverse order."
 	       do (forward-line 1)
 	       finally (return (point))))
 	(goto-char (point-min))
-	(sort-subr
-	 reverse
-	 (lambda ()
-	   (forward-line 1))
-	 'end-of-line
-	 nil
-	 nil
-	 (lambda (a1 a2)
-	   (string< (elt (get-text-property (car a1) 'vpt-data) column)
-		    (elt (get-text-property (car a2) 'vpt-data) column))))))))
+	(vpt--sort-lines column reverse)))))
+
+(defun vpt--sort-lines (column reverse)
+  "Sort the lines in the buffer based on the values in COLUMN."
+  (let ((lines nil))
+    (while (not (eobp))
+      (push (buffer-substring (point) (progn
+					(forward-line 1)
+					(point)))
+	    lines))
+    (delete-region (point-min) (point-max))
+    (setq lines (sort (nreverse lines)
+		      (lambda (l1 l2)
+			(string<
+			 (elt (get-text-property 1 'vpt-data l1) column)
+			 (elt (get-text-property 1 'vpt-data l2) column)))))
+    (when reverse
+      (setq lines (nreverse lines)))
+    (dolist (line lines)
+      (insert line))))
 
 (provide 'vpt)
 
