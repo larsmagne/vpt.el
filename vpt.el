@@ -64,7 +64,7 @@ Usage example:
                        '((\"A thing\" \"Yes\")
                          (\"A wide thing that needs chopping\" \"And more\")
                          (\"And the last one\" \"Foo\"))
-                        (thing1 thing2 thing3))"
+                       '(thing1 thing2 thing3))"
   (save-excursion
     (save-restriction
       (narrow-to-region (point) (point))
