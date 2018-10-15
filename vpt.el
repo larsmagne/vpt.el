@@ -85,8 +85,8 @@ Usage example:
 		    (not (bobp)))
 	  (forward-char -1))
 	;; Return at least one character.
-	(buffer-substring (point-min) (max (point)
-					   (1+ (point-min))))))))
+	(buffer-substring (point-min)
+			  (max (point) (1+ (point-min))))))))
 
 (defun vpt--pixel-column ()
   (if (not (get-buffer-window (current-buffer)))
