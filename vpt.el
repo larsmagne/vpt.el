@@ -100,13 +100,12 @@ Usage example:
 
 (defun vpt--pixel-width (length)
   (when length
-    (let ((buffer (current-buffer)))
-      (with-temp-buffer
-	;; We use an "8" to get the typical character width, because
-	;; this means that we won't chop off numbers if we're doing
-	;; number columns.
-	(insert (propertize (make-string length ?8) 'face 'variable-pitch))
-	(vpt--pixel-column)))))
+    (with-temp-buffer
+      ;; We use an "8" to get the typical character width, because
+      ;; this means that we won't chop off numbers if we're doing
+      ;; number columns.
+      (insert (propertize (make-string length ?8) 'face 'variable-pitch))
+      (vpt--pixel-column))))
 
 (defun vpt--column (i spec lines data separator-width)
   (let ((pixel-width (vpt--pixel-width (getf spec :width)))
